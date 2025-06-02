@@ -1,1 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curtain Stacking Calculator</title>
+    <style>
+        :root {
+            --accent-color: #e61e28;
+            --accent-color-darker: #c31a24;
+            --accent-color-focus-ring: rgba(230, 30, 40, 0.4);
+
+            --text-color-primary: #1f2937; 
+            --text-color-secondary: #374151; 
+            --text-color-muted: #6b7280; 
+            
+            --bg-color-page: #f3f4f6; 
+            --bg-color-card: #ffffff; 
+            --bg-color-input: #ffffff;
+            --bg-color-input-readonly: #eef2ff; 
+            
+            --border-color-input: #D1D5DB; 
+            --border-color-divider: #e5e7eb; 
+
+            --font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color-page);
+            color: var(--text-color-primary);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container { 
+            width: 100%;
+            max-width: 750px;
+            margin: 20px auto;
+            background: var(--bg-color-card);
+            padding: 2rem; 
+            border-radius: 0.75rem; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border-color-divider); 
+        }
+
+        h1 { 
+            color: var(--text-color-primary);
+            text-align: center;
+            margin-bottom: 2rem; 
+            font-size: 1.875rem; 
+            font-weight: 700; 
+        }
+        h2 { 
+            color: var(--text-color-primary);
+            text-align: center;
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem; 
+            font-weight: 600;
+        }
+         h3 { 
+            color: var(--accent-color); 
+            text-align: left;
+            margin-top: 1.75rem;
+            margin-bottom: 1rem;
+            font-size: 1.125rem; 
+            font-weight: 600;
+            border-bottom: 1px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px dashed var(--border-color-divider);
+        }
+        .form-section:last-of-type { 
+             border-bottom: none; /* Remove border for the last form section if followed by general options */
+        }
+         .general-options-section { 
+            margin-top: 1.5rem; 
+            padding-top: 1rem; 
+            border-top: 1px solid var(--border-color-divider); 
+         }
+
+        .form-group {
+            margin-bottom: 1.25rem; 
+        }
+        .form-group .inline-input-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem; 
+        }
+        .form-group .inline-input-group input[type="number"] {
+            flex: 1 1 0;
+            min-width: 60px;
+        }
+        .form-group .inline-input-group .unit-label {
+            font-size: 0.875rem; 
+            color: var(--text-color-muted);
+            flex-shrink: 0;
+        }
+
+        .form-group label { 
+            display: block;
+            margin-bottom: 0.375rem; 
+            font-weight: 500;
+            font-size: 0.875rem; 
+            color: var(--text-color-secondary);
+        }
+        .form-group label.checkbox-label,
+        .form-group label.radio-label {
+            font-weight: normal;
+            display: inline;
+            margin-left: 0.25rem; 
+            margin-right: 1rem; 
+            vertical-align: middle;
+            color: var(--text-color-secondary);
+            cursor: pointer;
+        }
+
+
+        .form-group input[type="number"],
+        .form-group input[type="text"],
+        .form-group select { 
+            width: 100%;
+            padding: 0.625rem 0.75rem; 
+            border: 1px solid var(--border-color-input);
+            border-radius: 0.375rem; 
+            box-sizing: border-box;
+            font-size: 0.9375rem; 
+            background-color: var(--bg-color-input);
+            color: var(--text-color-primary);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-group input[type="number"]:focus,
+        .form-group input[type="text"]:focus,
+        .form-group select:focus { 
+            outline: 2px transparent;
+            outline-offset: 2px;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px var(--accent-color-focus-ring);
+        }
+        .form-group input.invalid { 
+            border-color: var(--danger-color); 
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.4);
+        }
+        .form-group input[readonly] {
+            background-color: #e9ecef; 
+            cursor: default; 
+            color: var(--text-color-secondary);
+            border-color: var(--border-color-input); 
+        }
+         .form-group input[readonly]:focus { 
+             box-shadow: none;
+             border-color: var(--border-color-input);
+         }
+         .form-group input:disabled, .form-group select:disabled {
+            background-color: #e9ecef;
+            color: #6c757d;
+            cursor: not-allowed;
+            opacity: 0.7;
+         }
+
+
+        .form-group input[type="checkbox"],
+        .form-group input[type="radio"] {
+            margin-right: 0.25rem;
+            vertical-align: middle;
+            width: 1rem; 
+            height: 1rem; 
+            accent-color: var(--accent-color);
+            border-radius: 0.25rem; 
+            border: 1px solid var(--border-color-input);
+        }
+
+        .form-group small { 
+            display: block;
+            font-size: 0.875rem; 
+            color: var(--text-color-muted);
+            margin-top: 0.25rem; 
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem; 
+            margin-top: 1.5rem; 
+        }
+
+        button { 
+            flex-grow: 1;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.375rem; 
+            cursor: pointer;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button[type="submit"] {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        button[type="submit"]:hover {
+            background-color: var(--accent-color-darker);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        }
+        button[type="reset"] { 
+            background-color: #6c757d; 
+            color: white;
+        }
+         button[type="reset"]:hover {
+            background-color: #5a6268; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        }
+
+
+        .results-container {
+            margin-top: 2rem; 
+            padding: 1.5rem; 
+            background-color: var(--light-gray-color); 
+            border-radius: 0.5rem; 
+            border: 1px solid var(--border-color-divider);
+        }
+        .results-container p {
+            font-size: 0.9375rem;
+            margin-bottom: 0.75rem; 
+            color: var(--text-color-secondary);
+        }
+        .results-container p.final-total { 
+            font-size: 1.25rem; 
+            font-weight: 600; 
+            color: var(--accent-color);
+            margin-top: 0.75rem; 
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border-color-divider);
+        }
+         .results-container p.contingency-info, .results-container p#finalTotalStackingSpaceFeet {
+             font-size: 0.875rem;
+             color: var(--text-color-muted);
+         }
+
+        .results-container pre { 
+            background-color: #f9fafb; 
+            padding: 1rem;
+            border-radius: 0.375rem; 
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.875rem; 
+            border: 1px solid var(--border-color-divider);
+            max-height: 300px;
+            overflow-y: auto;
+            color: var(--text-color-secondary);
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .error-messages {
+            margin-top: 1.25rem;
+            padding: 0.75rem 1rem;
+            background-color: #fee2e2; 
+            color: #991b1b; 
+            border: 1px solid #fca5a5; 
+            border-radius: 0.375rem;
+            display: none;
+        }
+        .error-messages ul {
+            margin: 0;
+            padding-left: 1.25rem; 
+        }
+        
+        .calculator-footer { 
+            margin-top: 2rem; 
+            padding-top: 1rem; 
+            border-top: 1px solid var(--border-color-divider); 
+            font-size: 0.75rem; 
+            color: var(--text-color-muted); 
+            text-align: center; 
+        }
+        .calculator-footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+        .calculator-footer a:hover {
+            text-decoration: underline;
+        }
+
+
+        @media (max-width: 768px) {
+             h1 { font-size: 1.75rem; }
+             h2 { font-size: 1.5rem; }
+             h3 { font-size: 1.15rem; }
+            .container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+             .button-group {
+                flex-direction: column;
+            }
+        }
+         @media (max-width: 480px) {
+            .form-group .inline-input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .form-group .inline-input-group input[type="number"] {
+                margin-bottom: 0.5rem;
+            }
+            .form-group .inline-input-group .unit-label {
+                 margin-bottom: 0.5rem;
+                 text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Curtain Stacking Calculator</h1> 
+        <form id="calculatorForm">
+            <div class="form-section">
+                <h3>Curtain Dimensions</h3>
+                <div class="form-group">
+                    <label for="panelWidthFeet">Panel Width:</label>
+                    <div class="inline-input-group">
+                        <input type="number" id="panelWidthFeet" placeholder="0" min="0">
+                        <span class="unit-label">ft</span>
+                        <input type="number" id="panelWidthInches" placeholder="0" min="0" step="0.01">
+                        <span class="unit-label">in</span>
+                    </div>
+                </div>
+                 <div class="form-group">
+                    <label for="carrierSpacing">Carrier Spacing (inches):</label>
+                    <input type="number" id="carrierSpacing" value="12" required placeholder="e.g., 12">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Track & Hardware</h3>
+                <div class="form-group">
+                    <label>Track Input Method:</label>
+                    <div>
+                        <input type="radio" id="trackMethodList" name="trackMethod" value="list" checked>
+                        <label for="trackMethodList" class="radio-label">Select from List</label>
+                        <input type="radio" id="trackMethodManual" name="trackMethod" value="manual">
+                        <label for="trackMethodManual" class="radio-label">Enter Manually</label>
+                    </div>
+                </div>
+
+                <div id="trackListSection">
+                    <div class="form-group">
+                        <label for="manufacturer">Track Manufacturer:</label>
+                        <select id="manufacturer" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="series">Track Series:</label>
+                        <select id="series" required></select>
+                    </div>
+                </div>
+
+                <div id="manualTrackInputSection" style="display:none;">
+                    <div class="form-group">
+                        <label for="manualManufacturer">Track Manufacturer Name (Optional):</label>
+                        <input type="text" id="manualManufacturer" placeholder="e.g., Custom Build">
+                    </div>
+                    <div class="form-group">
+                        <label for="manualSeries">Track Series/Name (Optional):</label>
+                        <input type="text" id="manualSeries" placeholder="e.g., Stage Left Track">
+                    </div>
+                    <div class="form-group">
+                        <label for="manualStdCarrierWidth">Standard Carrier Width (inches):</label>
+                        <input type="number" step="0.001" id="manualStdCarrierWidth" placeholder="e.g., 1.5">
+                    </div>
+                    <div class="form-group">
+                        <label for="manualLeadCarrierWidth">Leader/Master Carrier Width (inches):</label>
+                        <input type="number" step="0.001" id="manualLeadCarrierWidth" placeholder="e.g., 6.0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Fabric & Fullness</h3>
+                <div class="form-group">
+                    <label for="fabricType">Fabric Type/Weight:</label>
+                    <select id="fabricType">
+                        <option value="">-- Select Fabric Type --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="fullnessPercentage">Fullness (%):</label>
+                    <input type="number" id="fullnessPercentage" placeholder="e.g., 100" value="100">
+                    <small>E.g., 100 for 100% fullness (fabric width is double the track coverage), 50 for 50% (fabric is 1.5x track coverage).</small>
+                </div>
+                <div class="form-group">
+                    <label for="foldFactor">Calculated Fabric Fold Depth Factor (inches per fold):</label>
+                    <input type="number" step="0.001" id="foldFactor" required readonly placeholder="Calculated">
+                    <small id="foldFactorHelpText">This value is automatically calculated based on Fabric Type and Fullness.</small>
+                </div>
+            </div>
+            
+            <div class="general-options-section">
+                <h3>Options</h3>
+                <div class="form-group">
+                    <input type="checkbox" id="isBiParting">
+                    <label for="isBiParting" class="checkbox-label">This is one panel of a bi-parting curtain (calculates for one side)</label>
+                </div>
+                <div class="form-group">
+                    <label for="contingencyPercentage">Add Contingency (%):</label>
+                    <input type="number" id="contingencyPercentage" value="0" min="0" placeholder="e.g., 10">
+                    <small>Adds a percentage buffer to the total calculated stacking space.</small>
+                </div>
+            </div>
+
+
+            <div class="button-group">
+                <button type="submit">Calculate</button>
+                <button type="reset">Reset Form</button>
+            </div>
+        </form>
+
+        <div id="resultsContainer" class="results-container" style="display:none;">
+            <h2>Calculation Results</h2>
+            <p id="hardwareStackResult"></p>
+            <p id="fabricStackResult"></p>
+            <p id="subTotalStackingSpace" class="sub-total"></p>
+            <p id="contingencyInfo" class="contingency-info"></p>
+            <p id="finalTotalStackingSpaceInches" class="final-total"></p>
+            <p id="finalTotalStackingSpaceFeet"></p> 
+            <h3>Details:</h3>
+            <pre id="details"></pre>
+        </div>
+        <div id="errorMessages" class="error-messages"></div>
+        
+        <footer class="calculator-footer">
+            Curtain Stack Calculator V1.0 | <a href="mailto:help@example.com">Help</a>
+        </footer>
+    </div>
+
+    <script>
+        // =================================================================================
+        // DATA CONFIGURATION SECTION
+        // To add or modify track or fabric data, edit the objects below.
+        //
+        // For TRACK_SYSTEM_DATA:
+        //   - Add new manufacturers as top-level keys.
+        //   - Under each manufacturer, add track series as keys.
+        //   - Each series object needs "standard_carrier_width" and "leader_carrier_width" in inches.
+        //
+        // For FABRIC_DATA:
+        //   - Add new fabric types as keys.
+        //   - Each fabric object needs a "name" (for display) and "baseThicknessPerFoldAt100Fullness" in inches.
+        //     This baseThickness is an *estimate* of how thick one fold of that fabric would be
+        //     if the curtain had 100% fullness.
+        // =================================================================================
+        const TRACK_SYSTEM_DATA = {
+            "ADC": {
+                "140 Flex-I-Trac": { "standard_carrier_width": 1.25, "leader_carrier_width": 5.0 }, 
+                "170 Besteel": { "standard_carrier_width": 1.5, "leader_carrier_width": 5.5 },
+                "280 Silent Steel": { "standard_carrier_width": 1.75, "leader_carrier_width": 7.0 },
+                "420 Rop-O-Blok": { "standard_carrier_width": 1.625, "leader_carrier_width": 6.5 }, 
+                "500 Patriarc (Tru-Roll 1000/2000 compatible)": { "standard_carrier_width": 2.125, "leader_carrier_width": 8.25 },
+                "548 Patriarc XL": { "standard_carrier_width": 2.5, "leader_carrier_width": 9.0 }, 
+                "1200 Tru-Roll Medium Duty": { "standard_carrier_width": 1.375, "leader_carrier_width": 5.875 },
+            },
+            "Triple E": {
+                "ERAIL": { "standard_carrier_width": 0.94, "leader_carrier_width": 2.75 },
+                "UNITRACK": { "standard_carrier_width": 1.125, "leader_carrier_width": 3.5 },
+                "UniTrack Heavy Duty": { "standard_carrier_width": 1.375, "leader_carrier_width": 4.25 }, 
+                "UNIBEAM": { "standard_carrier_width": 1.375, "leader_carrier_width": 4.5 },
+                "2Way": { "standard_carrier_width": 1.0, "leader_carrier_width": 3.0 }, 
+            },
+            "H&H Specialties": {
+                "No. 50 Series": { "standard_carrier_width": 1.0, "leader_carrier_width": 4.0 }, 
+                "100 Series": { "standard_carrier_width": 1.3125, "leader_carrier_width": 4.5 },
+                "No. 170 Series": { "standard_carrier_width": 1.375, "leader_carrier_width": 5.5 }, 
+                "200 Series": { "standard_carrier_width": 1.75, "leader_carrier_width": 5.5 },
+                "No. 254 Series (Curved)": { "standard_carrier_width": 1.875, "leader_carrier_width": 6.0 }, 
+                "300 Series": { "standard_carrier_width": 2.0, "leader_carrier_width": 6.5 },
+                "400 Series": { "standard_carrier_width": 2.0625, "leader_carrier_width": 7.5 },
+                "500 Series": { "standard_carrier_width": 2.25, "leader_carrier_width": 8.5 },
+            }
+        };
+
+        const FABRIC_DATA = {
+            "cyc_silk": { name: "Cyc Silk (China Silk)", baseThicknessPerFoldAt100Fullness: 0.15 },
+            "sharkstooth_scrim": { name: "Sharkstooth Scrim", baseThicknessPerFoldAt100Fullness: 0.20 },
+            "lightweight_muslin": { name: "Lightweight Muslin", baseThicknessPerFoldAt100Fullness: 0.25 },
+            "commando_12oz": { name: "Commando Cloth (12oz)", baseThicknessPerFoldAt100Fullness: 0.30 },
+            "medium_velour_16oz": { name: "Medium Velour (16-21oz)", baseThicknessPerFoldAt100Fullness: 0.45 },
+            "heavy_velour_25oz": { name: "Heavy Velour (25oz)", baseThicknessPerFoldAt100Fullness: 0.60 },
+            "heavyweight_canvas": { name: "Heavyweight Canvas/Duck", baseThicknessPerFoldAt100Fullness: 0.70 },
+            "extra_heavy_velour_32oz": { name: "Extra Heavy/Stiff Velour (32oz+)", baseThicknessPerFoldAt100Fullness: 0.75 },
+        };
+        // =================================================================================
+        // END OF DATA CONFIGURATION SECTION
+        // =================================================================================
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM ELEMENT CACHING ---
+            const form = document.getElementById('calculatorForm');
+            const panelWidthFeetEl = document.getElementById('panelWidthFeet');
+            const panelWidthInchesEl = document.getElementById('panelWidthInches');
+            const carrierSpacingEl = document.getElementById('carrierSpacing');
+            
+            const trackMethodRadios = document.querySelectorAll('input[name="trackMethod"]');
+            const trackListSectionEl = document.getElementById('trackListSection');
+            const manufacturerSelect = document.getElementById('manufacturer');
+            const seriesSelect = document.getElementById('series');
+            const manualTrackInputSectionEl = document.getElementById('manualTrackInputSection');
+            const manualManufacturerEl = document.getElementById('manualManufacturer');
+            const manualSeriesEl = document.getElementById('manualSeries');
+            const manualStdCarrierWidthEl = document.getElementById('manualStdCarrierWidth');
+            const manualLeadCarrierWidthEl = document.getElementById('manualLeadCarrierWidth');
+            
+            const fabricTypeEl = document.getElementById('fabricType');
+            const fullnessPercentageEl = document.getElementById('fullnessPercentage');
+            const foldFactorEl = document.getElementById('foldFactor'); 
+
+            const isBiPartingEl = document.getElementById('isBiParting');
+            const contingencyPercentageEl = document.getElementById('contingencyPercentage');
+            
+            const resultsContainer = document.getElementById('resultsContainer');
+            const hardwareStackResultEl = document.getElementById('hardwareStackResult');
+            const fabricStackResultEl = document.getElementById('fabricStackResult');
+            const subTotalStackingSpaceEl = document.getElementById('subTotalStackingSpace');
+            const contingencyInfoEl = document.getElementById('contingencyInfo');
+            const finalTotalStackingSpaceInchesEl = document.getElementById('finalTotalStackingSpaceInches');
+            const finalTotalStackingSpaceFeetEl = document.getElementById('finalTotalStackingSpaceFeet');
+            const detailsEl = document.getElementById('details');
+            const errorMessagesEl = document.getElementById('errorMessages');
+
+            const allInputFieldsForValidation = [
+                panelWidthFeetEl, panelWidthInchesEl, carrierSpacingEl, 
+                manufacturerSelect, seriesSelect, fabricTypeEl, fullnessPercentageEl, 
+                foldFactorEl, contingencyPercentageEl,
+                manualStdCarrierWidthEl, manualLeadCarrierWidthEl 
+            ];
+
+
+            // --- HELPER FUNCTIONS ---
+            function populateManufacturers() {
+                manufacturerSelect.innerHTML = '<option value="">-- Select Manufacturer --</option>';
+                for (const mfg in TRACK_SYSTEM_DATA) {
+                    const option = document.createElement('option');
+                    option.value = mfg;
+                    option.textContent = mfg;
+                    manufacturerSelect.appendChild(option);
+                }
+                updateSeriesDropdown();
+            }
+
+            function updateSeriesDropdown() {
+                const selectedMfg = manufacturerSelect.value;
+                seriesSelect.innerHTML = '<option value="">-- Select Series --</option>';
+                if (selectedMfg && TRACK_SYSTEM_DATA[selectedMfg]) {
+                    for (const seriesName in TRACK_SYSTEM_DATA[selectedMfg]) {
+                        const option = document.createElement('option');
+                        option.value = seriesName;
+                        option.textContent = seriesName;
+                        seriesSelect.appendChild(option);
+                    }
+                }
+            }
+
+            function populateFabricTypes() {
+                fabricTypeEl.innerHTML = '<option value="">-- Select Fabric Type --</option>';
+                for (const key in FABRIC_DATA) {
+                    const option = document.createElement('option');
+                    option.value = key;
+                    option.textContent = FABRIC_DATA[key].name;
+                    fabricTypeEl.appendChild(option);
+                }
+            }
+            
+            function deriveAndDisplayFoldFactor() {
+                const selectedFabricKey = fabricTypeEl.value;
+                const fullness = parseFloat(fullnessPercentageEl.value);
+
+                if (selectedFabricKey && !isNaN(fullness) && fullness >= 0 && FABRIC_DATA[selectedFabricKey]) {
+                    const fabricInfo = FABRIC_DATA[selectedFabricKey];
+                    const baseThickness = fabricInfo.baseThicknessPerFoldAt100Fullness;
+                    const derivedFactor = baseThickness * (fullness / 100);
+                    foldFactorEl.value = derivedFactor.toFixed(3);
+                } else {
+                    foldFactorEl.value = ""; 
+                }
+            }
+
+
+            function getPanelWidthInInches() {
+                const feet = parseFloat(panelWidthFeetEl.value) || 0;
+                const inches = parseFloat(panelWidthInchesEl.value) || 0;
+                if (feet < 0 || inches < 0) return NaN; 
+                return (feet * 12) + inches;
+            }
+
+            function clearErrorMessagesAndHighlights() {
+                errorMessagesEl.style.display = 'none';
+                errorMessagesEl.innerHTML = '';
+                allInputFieldsForValidation.forEach(field => field.classList.remove('invalid'));
+            }
+
+            function displayError(messages) {
+                clearErrorMessagesAndHighlights();
+                errorMessagesEl.innerHTML = '<ul>' + messages.map(msg => `<li>${msg}</li>`).join('') + '</ul>';
+                errorMessagesEl.style.display = 'block';
+                resultsContainer.style.display = 'none';
+            }
+            
+            function highlightInvalidField(fieldElement) {
+                fieldElement.classList.add('invalid');
+            }
+            
+            function getSelectedTrackMethod() {
+                return document.querySelector('input[name="trackMethod"]:checked').value;
+            }
+
+            function toggleTrackInputMethod() {
+                const method = getSelectedTrackMethod();
+                if (method === 'list') {
+                    trackListSectionEl.style.display = 'block';
+                    manufacturerSelect.disabled = false;
+                    seriesSelect.disabled = false;
+                    manualTrackInputSectionEl.style.display = 'none';
+                    manualStdCarrierWidthEl.disabled = true;
+                    manualLeadCarrierWidthEl.disabled = true;
+                } else { // manual
+                    trackListSectionEl.style.display = 'none';
+                    manufacturerSelect.disabled = true;
+                    seriesSelect.disabled = true;
+                    manualTrackInputSectionEl.style.display = 'block';
+                    manualStdCarrierWidthEl.disabled = false;
+                    manualLeadCarrierWidthEl.disabled = false;
+                }
+            }
+
+
+            // --- MAIN CALCULATION LOGIC ---
+            function calculateCurtainStackingSpace(
+                panel_width_inches,
+                carrier_spacing_inches,
+                track_info, 
+                fabric_fold_depth_factor,
+                contingency_percentage
+            ) {
+                let standard_carrier_width, leader_carrier_width;
+                let track_manufacturer_display = track_info.manufacturer || track_info.manual_mfg || "N/A";
+                let track_series_display = track_info.series || track_info.manual_series || "N/A";
+
+
+                if (track_info.manufacturer && track_info.series) { 
+                    const carrier_data = TRACK_SYSTEM_DATA[track_info.manufacturer]?.[track_info.series];
+                    if (!carrier_data) return { errorMessages: ["Selected track system data not found."] };
+                    standard_carrier_width = carrier_data.standard_carrier_width;
+                    leader_carrier_width = carrier_data.leader_carrier_width;
+                } else { 
+                    standard_carrier_width = track_info.std_width;
+                    leader_carrier_width = track_info.lead_width;
+                }
+
+
+                let num_standard_carriers;
+                if (panel_width_inches < carrier_spacing_inches || panel_width_inches === 0) {
+                    num_standard_carriers = 0;
+                } else {
+                    num_standard_carriers = Math.floor(panel_width_inches / carrier_spacing_inches);
+                    num_standard_carriers = Math.max(0, num_standard_carriers - 1);
+                }
+
+                const hardware_stack_inches = (num_standard_carriers * standard_carrier_width) + leader_carrier_width;
+
+                let num_folds = num_standard_carriers;
+                if (num_standard_carriers === 0 && panel_width_inches > 0) {
+                    num_folds = 1;
+                }
+                if (panel_width_inches === 0) num_folds = 0;
+
+                const fabric_stack_inches = num_folds * fabric_fold_depth_factor;
+                const sub_total_stacking_space_inches = hardware_stack_inches + fabric_stack_inches;
+
+                const contingency_amount_inches = sub_total_stacking_space_inches * (contingency_percentage / 100);
+                const final_total_stacking_space_inches = sub_total_stacking_space_inches + contingency_amount_inches;
+
+                const feetInputVal = parseFloat(panelWidthFeetEl.value) || 0;
+                const inchesInputVal = parseFloat(panelWidthInchesEl.value) || 0;
+
+                const details = {
+                    "Panel Width (input)": `${feetInputVal} ft ${inchesInputVal} in`,
+                    "Panel Width (calculated inches)": panel_width_inches.toFixed(2),
+                    "Carrier Spacing (inches)": carrier_spacing_inches,
+                    "Track Input Method": getSelectedTrackMethod() === 'list' ? "Selected from List" : "Manual Entry",
+                    "Track Manufacturer": track_manufacturer_display,
+                    "Track Series/Name": track_series_display, // Changed label for clarity
+                    "Fabric Type": fabricTypeEl.options[fabricTypeEl.selectedIndex]?.text || "N/A",
+                    "Fullness (%)": fullnessPercentageEl.value,
+                    "Derived Fold Depth Factor (inch/fold)": parseFloat(foldFactorEl.value).toFixed(3),
+                    "Standard Carrier Stacking Width (inch)": standard_carrier_width.toFixed(3),
+                    "Leader Carrier Stacking Width (inch)": leader_carrier_width.toFixed(3),
+                    "Number of Standard Carriers Calculated": num_standard_carriers,
+                    "Number of Leader Carriers": 1,
+                    "Calculated Hardware Stack (inches)": hardware_stack_inches.toFixed(3),
+                    "Number of Fabric Folds Calculated": num_folds,
+                    "Calculated Fabric Stack (inches)": fabric_stack_inches.toFixed(3),
+                    "Subtotal Stacking Space (inches)": sub_total_stacking_space_inches.toFixed(3),
+                    "Contingency Percentage (%)": contingency_percentage,
+                    "Contingency Amount (inches)": contingency_amount_inches.toFixed(3),
+                    "FINAL Stacking Space with Contingency (inches)": final_total_stacking_space_inches.toFixed(3),
+                };
+
+                return {
+                    hardware_stack_inches,
+                    fabric_stack_inches,
+                    sub_total_stacking_space_inches,
+                    contingency_percentage,
+                    contingency_amount_inches,
+                    final_total_stacking_space_inches,
+                    details
+                };
+            }
+
+            // --- EVENT HANDLERS ---
+            manufacturerSelect.addEventListener('change', updateSeriesDropdown);
+            fabricTypeEl.addEventListener('change', deriveAndDisplayFoldFactor);
+            fullnessPercentageEl.addEventListener('input', deriveAndDisplayFoldFactor);
+            panelWidthFeetEl.addEventListener('input', deriveAndDisplayFoldFactor); 
+            panelWidthInchesEl.addEventListener('input', deriveAndDisplayFoldFactor);
+            
+            trackMethodRadios.forEach(radio => {
+                radio.addEventListener('change', toggleTrackInputMethod);
+            });
+
+
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                clearErrorMessagesAndHighlights();
+                let validationErrors = [];
+
+                deriveAndDisplayFoldFactor(); 
+
+                const panel_width_inches = getPanelWidthInInches();
+                const carrier_spacing_inches = parseFloat(carrierSpacingEl.value);
+                const track_method = getSelectedTrackMethod();
+                
+                let track_info_for_calc = {};
+                let track_manufacturer_for_validation = ""; // Used for list method
+                let track_series_for_validation = "";     // Used for list method
+
+
+                if (track_method === 'list') {
+                    track_manufacturer_for_validation = manufacturerSelect.value;
+                    track_series_for_validation = seriesSelect.value;
+                    if (!track_manufacturer_for_validation) {
+                        validationErrors.push("Please select a Track Manufacturer.");
+                        highlightInvalidField(manufacturerSelect);
+                    }
+                    if (!track_series_for_validation) {
+                        validationErrors.push("Please select a Track Series.");
+                        highlightInvalidField(seriesSelect);
+                    }
+                    if (track_manufacturer_for_validation && track_series_for_validation && !TRACK_SYSTEM_DATA[track_manufacturer_for_validation]?.[track_series_for_validation]) {
+                        validationErrors.push(`Data for selected Manufacturer/Series not found.`);
+                        highlightInvalidField(manufacturerSelect);
+                        highlightInvalidField(seriesSelect);
+                    }
+                    track_info_for_calc = { manufacturer: track_manufacturer_for_validation, series: track_series_for_validation };
+                } else { // manual
+                    track_info_for_calc.manual_mfg = manualManufacturerEl.value.trim();
+                    track_info_for_calc.manual_series = manualSeriesEl.value.trim();
+                    track_info_for_calc.std_width = parseFloat(manualStdCarrierWidthEl.value);
+                    track_info_for_calc.lead_width = parseFloat(manualLeadCarrierWidthEl.value);
+
+                    if (isNaN(track_info_for_calc.std_width) || track_info_for_calc.std_width <= 0) {
+                        validationErrors.push("Manual Standard Carrier Width must be a positive number.");
+                        highlightInvalidField(manualStdCarrierWidthEl);
+                    }
+                    if (isNaN(track_info_for_calc.lead_width) || track_info_for_calc.lead_width <= 0) {
+                        validationErrors.push("Manual Leader Carrier Width must be a positive number.");
+                        highlightInvalidField(manualLeadCarrierWidthEl);
+                    }
+                }
+
+
+                const current_fold_factor = parseFloat(foldFactorEl.value);
+                const is_bi_parting = isBiPartingEl.checked;
+                const contingency_percentage = parseFloat(contingencyPercentageEl.value) || 0;
+
+                // Common Validation Logic
+                if (isNaN(panel_width_inches) || panel_width_inches < 0) {
+                    validationErrors.push("Panel Width must be a valid non-negative number (total inches).");
+                    highlightInvalidField(panelWidthFeetEl);
+                    highlightInvalidField(panelWidthInchesEl);
+                }
+                if (isNaN(carrier_spacing_inches) || carrier_spacing_inches <= 0) {
+                    validationErrors.push("Carrier Spacing must be a positive number.");
+                    highlightInvalidField(carrierSpacingEl);
+                }
+                if (!fabricTypeEl.value) {
+                    validationErrors.push("Please select a Fabric Type.");
+                    highlightInvalidField(fabricTypeEl);
+                }
+                const fullnessVal = parseFloat(fullnessPercentageEl.value);
+                if (isNaN(fullnessVal) || fullnessVal < 0) { 
+                    validationErrors.push("Fullness Percentage must be a non-negative number.");
+                    highlightInvalidField(fullnessPercentageEl);
+                }
+                if (isNaN(current_fold_factor) || current_fold_factor < 0) {
+                     validationErrors.push("Calculated Fabric Fold Depth Factor is invalid. Check Fabric Type and Fullness.");
+                     highlightInvalidField(foldFactorEl);
+                     if (!fabricTypeEl.value) highlightInvalidField(fabricTypeEl);
+                     if (isNaN(fullnessVal) || fullnessVal < 0) highlightInvalidField(fullnessPercentageEl);
+                }
+                if (isNaN(contingency_percentage) || contingency_percentage < 0) {
+                    validationErrors.push("Contingency must be a non-negative number.");
+                    highlightInvalidField(contingencyPercentageEl);
+                }
+
+
+                if (validationErrors.length > 0) {
+                    displayError(validationErrors);
+                    return;
+                }
+
+                const result = calculateCurtainStackingSpace(
+                    panel_width_inches,
+                    carrier_spacing_inches,
+                    track_info_for_calc,
+                    current_fold_factor,
+                    contingency_percentage
+                );
+
+                if (result.errorMessages) {
+                    displayError(result.errorMessages);
+                } else {
+                    resultsContainer.style.display = 'block';
+                    let sideNote = is_bi_parting ? " (per side)" : "";
+                    
+                    hardwareStackResultEl.textContent = `Hardware Stack: ${result.hardware_stack_inches.toFixed(2)} inches${sideNote}`;
+                    fabricStackResultEl.textContent = `Fabric Stack: ${result.fabric_stack_inches.toFixed(2)} inches${sideNote}`;
+                    subTotalStackingSpaceEl.textContent = `Subtotal Stacking Space: ${result.sub_total_stacking_space_inches.toFixed(2)} inches${sideNote}`; 
+                    if (result.contingency_percentage > 0) {
+                        contingencyInfoEl.textContent = `Plus ${result.contingency_percentage}% Contingency: +${result.contingency_amount_inches.toFixed(2)} inches${sideNote}`;
+                        contingencyInfoEl.style.display = 'block';
+                    } else {
+                        contingencyInfoEl.style.display = 'none';
+                    }
+                    finalTotalStackingSpaceInchesEl.textContent = `FINAL Stacking Space: ${result.final_total_stacking_space_inches.toFixed(2)} inches${sideNote}`;
+                    
+                    const totalResultInches = result.final_total_stacking_space_inches;
+                    const feetComponent = Math.floor(totalResultInches / 12);
+                    const inchesComponent = (totalResultInches % 12); 
+                    const inchesDisplay = Number.isInteger(inchesComponent) ? inchesComponent.toFixed(0) : inchesComponent.toFixed(2);
+
+                    finalTotalStackingSpaceFeetEl.textContent = `(Approximately: ${feetComponent} ft ${inchesDisplay} in${sideNote})`;
+                    
+                    let detailsFormatted = "";
+                    for (const key in result.details) {
+                        detailsFormatted += `${key}: ${result.details[key]}\n`;
+                    }
+                    detailsFormatted += `Bi-Parting Panel${sideNote ? "" : " (single draw)"}: ${is_bi_parting ? "Yes" : "No"}\n`;
+                    detailsEl.textContent = detailsFormatted;
+                }
+            });
+            
+            form.addEventListener('reset', () => {
+                clearErrorMessagesAndHighlights();
+                resultsContainer.style.display = 'none';
+                panelWidthFeetEl.value = ""; 
+                panelWidthInchesEl.value = ""; 
+                
+                document.getElementById('trackMethodList').checked = true; 
+                toggleTrackInputMethod(); 
+                manufacturerSelect.value = "";
+                updateSeriesDropdown();
+                manualManufacturerEl.value = "";
+                manualSeriesEl.value = "";
+                manualStdCarrierWidthEl.value = "";
+                manualLeadCarrierWidthEl.value = "";
+
+                fabricTypeEl.value = ""; 
+                fullnessPercentageEl.value = "100"; 
+                deriveAndDisplayFoldFactor();
+                carrierSpacingEl.value = "12"; 
+                contingencyPercentageEl.value = "0";
+                isBiPartingEl.checked = false;
+            });
+
+            // --- INITIALIZATION ---
+            populateManufacturers();
+            populateFabricTypes();
+            toggleTrackInputMethod(); 
+            deriveAndDisplayFoldFactor();
+        });
+    </script>
+</body>
+</html>
 
