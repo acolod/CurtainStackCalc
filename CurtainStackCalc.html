@@ -49,13 +49,35 @@
             border: 1px solid var(--border-color-divider); 
         }
 
+        .title-container {
+            display: flex;
+            flex-direction: column; /* Stack title and link */
+            align-items: center;
+            justify-content: center; 
+            margin-bottom: 2rem;
+            position: relative; 
+        }
+
         h1 { 
             color: var(--text-color-primary);
             text-align: center;
-            margin-bottom: 2rem; 
             font-size: 1.875rem; 
             font-weight: 700; 
+            margin: 0 0 0.5rem 0; /* Add some bottom margin */
         }
+
+        .info-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+        .info-link:hover {
+            text-decoration: underline;
+            color: var(--accent-color-darker);
+        }
+
+
         h2 { 
             color: var(--text-color-primary);
             text-align: center;
@@ -81,7 +103,7 @@
             border-bottom: 1px dashed var(--border-color-divider);
         }
         .form-section:last-of-type { 
-             border-bottom: none; /* Remove border for the last form section if followed by general options */
+             border-bottom: none; 
         }
          .general-options-section { 
             margin-top: 1.5rem; 
@@ -295,6 +317,72 @@
             text-decoration: underline;
         }
 
+        /* Modal Styles */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.5); 
+            padding-top: 60px; 
+        }
+
+        .modal-content {
+            background-color: var(--bg-color-card);
+            margin: 5% auto; 
+            padding: 25px 30px;
+            border: 1px solid var(--border-color-divider);
+            width: 80%; 
+            max-width: 700px; 
+            border-radius: 0.75rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .modal-content h4 {
+            color: var(--accent-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            border-bottom: 1px solid var(--border-color-divider);
+            padding-bottom: 0.5rem;
+        }
+        .modal-content p, .modal-content ul {
+            font-size: 0.9rem;
+            color: var(--text-color-secondary);
+            margin-bottom: 0.75rem;
+        }
+        .modal-content ul {
+            padding-left: 1.5rem;
+        }
+        .modal-content li {
+            margin-bottom: 0.3rem;
+        }
+        .modal-content strong {
+            font-weight: 600;
+            color: var(--text-color-primary);
+        }
+
+
+        .modal-close-button {
+            color: var(--text-color-muted);
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+        .modal-close-button:hover,
+        .modal-close-button:focus {
+            color: var(--text-color-primary);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
 
         @media (max-width: 768px) {
              h1 { font-size: 1.75rem; }
@@ -306,6 +394,10 @@
             }
              .button-group {
                 flex-direction: column;
+            }
+            .modal-content {
+                width: 90%;
+                margin: 10% auto;
             }
         }
          @media (max-width: 480px) {
@@ -325,7 +417,11 @@
 </head>
 <body>
     <div class="container">
-        <h1>Curtain Stacking Calculator</h1> 
+        <div class="title-container">
+            <h1>Curtain Stacking Calculator</h1> 
+            <a href="#" id="infoLink" class="info-link" title="Help & Instructions">Instructions & Assumptions</a>
+        </div>
+
         <form id="calculatorForm">
             <div class="form-section">
                 <h3>Curtain Dimensions</h3>
@@ -441,25 +537,66 @@
         <div id="errorMessages" class="error-messages"></div>
         
         <footer class="calculator-footer">
-            Curtain Stack Calculator V1.0 | <a href="mailto:help@example.com">Help</a>
+            Curtain Stack Calculator V1.0 | <a href="mailto:alex.colodner@gmail.com?subject=Curtain%20Stacking%20Calculator%20Help">Help</a>
         </footer>
     </div>
+
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close-button" id="closeInfoModalButton">&times;</span>
+            <h2>Calculator Instructions & Assumptions</h2>
+
+            <h4>How to Use:</h4>
+            <ul>
+                <li><strong>Curtain Dimensions:</strong> Enter the total flat width of the curtain panel in feet and/or inches. Specify the spacing between curtain carriers on the track (default is 12 inches).</li>
+                <li><strong>Track & Hardware:</strong>
+                    <ul>
+                        <li><em>Select from List:</em> Choose a known track manufacturer and series. Carrier dimensions will be pre-filled.</li>
+                        <li><em>Enter Manually:</em> If your track isn't listed, select this option to input the standard carrier width and leader/master carrier width directly. Manufacturer/Series names are for your reference.</li>
+                    </ul>
+                </li>
+                <li><strong>Fabric & Fullness:</strong>
+                    <ul>
+                        <li><em>Fabric Type/Weight:</em> Select the closest fabric type. This, along with fullness, determines the "Fabric Fold Depth Factor."</li>
+                        <li><em>Fullness (%):</em> Enter the desired curtain fullness as a percentage (e.g., 100 for 100% fullness, where fabric is twice the width of the space it covers).</li>
+                        <li><em>Calculated Fabric Fold Depth Factor:</em> This is automatically derived and shows the estimated thickness of a single fabric fold.</li>
+                    </ul>
+                </li>
+                <li><strong>Options:</strong>
+                    <ul>
+                        <li><em>Bi-Parting Curtain:</em> Check this if the dimensions entered are for one panel of a two-panel (center-opening) curtain. Results will be for one side.</li>
+                        <li><em>Contingency (%):</em> Add a percentage buffer to the final calculated stacking space for unforeseen variations.</li>
+                    </ul>
+                </li>
+                <li><strong>Calculate/Reset:</strong> Click "Calculate" to see the results. "Reset Form" clears all inputs.</li>
+            </ul>
+
+            <h4>Built-in Assumptions:</h4>
+            <ul>
+                <li><strong>Fabric Stack Calculation:</strong> The space taken by the fabric itself is estimated by:
+                    <ul>
+                        <li>Calculating the number of folds (based on panel width and carrier spacing).</li>
+                        <li>Multiplying the number of folds by the "Fabric Fold Depth Factor."</li>
+                    </ul>
+                </li>
+                <li><strong>Fabric Fold Depth Factor:</strong> This crucial value is derived from:
+                    <ul>
+                        <li>A 'Base Thickness per Fold at 100% Fullness' assigned to each fabric type in the calculator's data. These are *estimates*.</li>
+                        <li>The 'Fullness (%)' you enter. The formula is approximately: <code>Fold Factor = Base Thickness * (Fullness % / 100)</code>.</li>
+                        <li><strong>Important:</strong> The accuracy of the fabric stack depends heavily on the chosen fabric type's base thickness and the entered fullness. These base values are for standard traveler curtain operation.</li>
+                    </ul>
+                </li>
+                 <li><strong>Standard Traveler Operation:</strong> This calculator is primarily designed for standard traveler curtains. It does not specifically model specialized hardware like backpacking or rear-fold systems.</li>
+                <li><strong>Leader Carrier:</strong> One leader/master carrier is assumed for each panel.</li>
+                <li><strong>Estimates:</strong> All results are estimates for planning purposes. Real-world conditions, fabric dressing, and specific hardware variations can influence actual stacking space. Always verify with manufacturer specifications for critical applications.</li>
+            </ul>
+        </div>
+    </div>
+
 
     <script>
         // =================================================================================
         // DATA CONFIGURATION SECTION
-        // To add or modify track or fabric data, edit the objects below.
-        //
-        // For TRACK_SYSTEM_DATA:
-        //   - Add new manufacturers as top-level keys.
-        //   - Under each manufacturer, add track series as keys.
-        //   - Each series object needs "standard_carrier_width" and "leader_carrier_width" in inches.
-        //
-        // For FABRIC_DATA:
-        //   - Add new fabric types as keys.
-        //   - Each fabric object needs a "name" (for display) and "baseThicknessPerFoldAt100Fullness" in inches.
-        //     This baseThickness is an *estimate* of how thick one fold of that fabric would be
-        //     if the curtain had 100% fullness.
         // =================================================================================
         const TRACK_SYSTEM_DATA = {
             "ADC": {
@@ -537,6 +674,11 @@
             const finalTotalStackingSpaceFeetEl = document.getElementById('finalTotalStackingSpaceFeet');
             const detailsEl = document.getElementById('details');
             const errorMessagesEl = document.getElementById('errorMessages');
+
+            const infoLinkEl = document.getElementById('infoLink'); 
+            const infoModalEl = document.getElementById('infoModal');
+            const closeInfoModalButtonEl = document.getElementById('closeInfoModalButton');
+
 
             const allInputFieldsForValidation = [
                 panelWidthFeetEl, panelWidthInchesEl, carrierSpacingEl, 
@@ -699,7 +841,7 @@
                     "Carrier Spacing (inches)": carrier_spacing_inches,
                     "Track Input Method": getSelectedTrackMethod() === 'list' ? "Selected from List" : "Manual Entry",
                     "Track Manufacturer": track_manufacturer_display,
-                    "Track Series/Name": track_series_display, // Changed label for clarity
+                    "Track Series/Name": track_series_display, 
                     "Fabric Type": fabricTypeEl.options[fabricTypeEl.selectedIndex]?.text || "N/A",
                     "Fullness (%)": fullnessPercentageEl.value,
                     "Derived Fold Depth Factor (inch/fold)": parseFloat(foldFactorEl.value).toFixed(3),
@@ -738,6 +880,23 @@
                 radio.addEventListener('change', toggleTrackInputMethod);
             });
 
+            if (infoLinkEl) { 
+                infoLinkEl.addEventListener('click', (event) => {
+                    event.preventDefault(); 
+                    infoModalEl.style.display = 'block'; 
+                });
+            }
+            if (closeInfoModalButtonEl) {
+                closeInfoModalButtonEl.addEventListener('click', () => {
+                    infoModalEl.style.display = 'none';
+                });
+            }
+            window.addEventListener('click', (event) => {
+                if (event.target == infoModalEl) {
+                    infoModalEl.style.display = 'none';
+                }
+            });
+
 
             form.addEventListener('submit', (event) => {
                 event.preventDefault();
@@ -751,8 +910,8 @@
                 const track_method = getSelectedTrackMethod();
                 
                 let track_info_for_calc = {};
-                let track_manufacturer_for_validation = ""; // Used for list method
-                let track_series_for_validation = "";     // Used for list method
+                let track_manufacturer_for_validation = ""; 
+                let track_series_for_validation = "";     
 
 
                 if (track_method === 'list') {
@@ -902,4 +1061,3 @@
     </script>
 </body>
 </html>
-
